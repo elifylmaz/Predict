@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  prediction:
+    build: .
+    container_name: Prediction
+    env_file: .env
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    command: ["python", "api/app.py"]
