@@ -4,7 +4,6 @@ from api.services.auth_service import token_required
 
 prediction_bp = Blueprint('prediction_bp', __name__)
 
-
 @prediction_bp.route('/predict', methods=['GET'])
 @token_required
 def predict():

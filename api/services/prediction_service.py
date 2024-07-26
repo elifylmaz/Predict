@@ -1,13 +1,9 @@
-import os
 import pandas as pd
-from dotenv import load_dotenv
-
-# Yüklenen .env dosyasının değerlerini kullanın
-load_dotenv()
+import os
 
 def get_predictions(product_id):
     # predictions.json dosyasının varlığını kontrol et
-    if not os.path.exists('Prediction/predictions.json'):
+    if not os.path.exists('predictions.json'):
         return {'error': 'Predictions file does not exist.'}
 
     # predictions.json dosyasını oku

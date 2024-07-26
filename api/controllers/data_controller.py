@@ -1,5 +1,3 @@
-import json
-import os
 from flask import Blueprint, request, jsonify
 from api.services.auth_service import token_required
 from api.services.data_service import fetch_data
@@ -30,15 +28,16 @@ def set_data():
 
         # Gelecekteki tahminleri yap
         predictions_df = predict_future(models, preprocessed_data, current_date)
+        print("Tahminler tamamlandı.")
 
-        # prediction_df'yi JSON formatında döndür
-        predictions_json = predictions_df.to_json(orient='records')
+        # prediction_df'yi JSON formatında dosyaya yaz
+        predictions_df.to_json('predictions.json', orient='records', lines=True)
+        print("Tahminler kaydedildi.")
 
         # Sonuçları JSON formatında döndür
         return jsonify({
             'avg_mse': avg_mse,
             'avg_r2': avg_r2,
-            'predictions': json.loads(predictions_json),
             'message': 'Predictions processed successfully.'
         })
 
