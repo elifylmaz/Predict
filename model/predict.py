@@ -54,4 +54,7 @@ def predict_future(models, data, current_date):
     # Create a DataFrame for predictions
     predictions_df = pd.DataFrame(predictions)
 
+    # Save the DataFrame to a CSV file
+    #predictions_df.to_csv('predictions.csv', index=False)
+
     return predictions_df

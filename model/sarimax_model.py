@@ -1,10 +1,10 @@
 import numpy as np
 import os
+
+from sklearn.model_selection import train_test_split
 from statsmodels.tools.sm_exceptions import ValueWarning
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
-from model.preprocessing import df
 import warnings
 
 warnings.filterwarnings('ignore', category=ValueWarning)
@@ -17,7 +17,7 @@ def train_and_predict(df):
 
     for product_id in df['Product Id'].unique():
         product_data = df[df['Product Id'] == product_id]
-        product_count = int(os.getenv('PRODUCT_COUNT'))  # Default to 30 if not set
+        product_count = int(os.getenv('PRODUCT_COUNT'))
 
         if len(product_data) < product_count:
             #print(f"Product ID {product_id} has insufficient data.")
@@ -84,5 +84,3 @@ def train_and_predict(df):
 
     return models, avg_mse, avg_r2
 
-
-models, avg_mse, avg_r2 = train_and_predict(df)

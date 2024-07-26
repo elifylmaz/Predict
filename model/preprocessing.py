@@ -1,14 +1,15 @@
 import pandas as pd
 from scipy import stats
 from dotenv import load_dotenv
-from api.services.data_service import fetch_data
 
 # Load the .env file
 load_dotenv()
 
 def preprocess(data):
 
-    data = data['data']
+    if 'data' in data:
+        data = data['data']
+        print("Data preprocessing")
     df = pd.DataFrame(data)
 
     # Preprocess
@@ -69,7 +70,3 @@ def preprocess(data):
 
     # Return the processed DataFrame
     return df
-
-# Fetch data and preprocess
-data = fetch_data()
-df = preprocess(data)

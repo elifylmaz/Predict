@@ -1,3 +1,4 @@
+import json
 import os
 from flask import Blueprint, request, jsonify
 from api.services.auth_service import token_required
@@ -9,7 +10,6 @@ from datetime import datetime
 
 data_bp = Blueprint('data_bp', __name__)
 
-
 @data_bp.route('/SetData', methods=['POST'])
 @token_required
 def set_data():
@@ -17,27 +17,30 @@ def set_data():
         # Verileri almak için fetch_data fonksiyonunu çağır
         data = fetch_data()
 
-        # data.json dosyasının varlığını kontrol et
-        if os.path.exists('data.json'):
-            # Verileri ön işleme tabi tut
-            preprocessed_data = preprocess(data)
+        # Verileri ön işleme tabi tut
+        preprocessed_data = preprocess(data)
 
-            # SARIMAX modelini eğit ve tahmin yap
-            models, avg_mse, avg_r2 = train_and_predict(preprocessed_data)
+        # Model eğitimini başlat ve sonuçları al
+        print("Model eğitimi başlıyor...")
+        models, avg_mse, avg_r2 = train_and_predict(preprocessed_data)
+        print("Model eğitimi tamamlandı.")
 
-            # Geçerli tarihi al
-            current_date = datetime.now()
+        # Geçerli tarihi al
+        current_date = datetime.now()
 
-            # Gelecekteki tahminleri yap
-            predictions_df = predict_future(models, preprocessed_data, current_date)
+        # Gelecekteki tahminleri yap
+        predictions_df = predict_future(models, preprocessed_data, current_date)
 
-            # Sonuçları JSON formatında döndür
-            return jsonify({
-                'avg_mse': avg_mse,
-                'avg_r2': avg_r2,
-            })
-        else:
-            return jsonify({'message': 'data.json dosyası bulunamadı, lütfen verileri kontrol edin.'}), 404
+        # prediction_df'yi JSON formatında döndür
+        predictions_json = predictions_df.to_json(orient='records')
+
+        # Sonuçları JSON formatında döndür
+        return jsonify({
+            'avg_mse': avg_mse,
+            'avg_r2': avg_r2,
+            'predictions': json.loads(predictions_json),
+            'message': 'Predictions processed successfully.'
+        })
 
     except Exception as e:
         # Hata durumunda hata mesajını JSON formatında döndür
