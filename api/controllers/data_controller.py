@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from api.services.auth_service import token_required
 from api.services.data_service import fetch_data
 from model.preprocessing import preprocess
-from model.sarimax_model import train_and_predict
+from model.model import train_and_predict
 from model.predict import predict_future
 from datetime import datetime
 
@@ -14,6 +14,7 @@ def set_data():
     try:
         # Verileri almak için fetch_data fonksiyonunu çağır
         data = fetch_data()
+        print("Veri başarıyla alındı.")
 
         # Verileri ön işleme tabi tut
         preprocessed_data = preprocess(data)
@@ -43,4 +44,4 @@ def set_data():
 
     except Exception as e:
         # Hata durumunda hata mesajını JSON formatında döndür
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'Error': str(e)}), 500

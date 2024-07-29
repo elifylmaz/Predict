@@ -2,7 +2,7 @@ import requests
 import json
 import os
 from dotenv import load_dotenv
-from api.services.auth_service import token_required
+from flask import request
 
 # Load the .env file
 load_dotenv()
@@ -11,16 +11,26 @@ load_dotenv()
 gatewayUri = os.getenv('GATEWAY_URI')
 endpoint = os.getenv('ENDPOINT')
 
-
 def fetch_data():
-    sql_query = input("SQL sorgusunu girin: ")
-    query = sql_query
+    # Ham JSON verisini al
+    raw_data = request.data.decode('utf-8')  # bytes to string
+    print("Gelen ham JSON verisi:", raw_data)
+    print("Gelen ham JSON verisinin tipi:", type(raw_data))
+
+    try:
+        # JSON stringini doğrudan SQL sorgusu olarak al
+        sql_query = json.loads(raw_data)
+        print("Dönüştürülmüş SQL sorgusu:", sql_query)
+        print("SQL sorgusunun tipi:", type(sql_query))
+    except json.JSONDecodeError:
+        raise ValueError("JSON verisi çözülürken bir hata oluştu.")
+
+    # URL ve diğer ayarları yapılandır
     url = gatewayUri + endpoint
-    response = send_query(url, query)
+    response = send_query(url, sql_query)
 
     if response.status_code == 200:
         data = response.json()
-        # Etiketleri kontrol et
         if check_json_labels(data):
             return data
         else:
@@ -28,13 +38,11 @@ def fetch_data():
     else:
         raise ValueError(f"Bir hata oluştu: {response.status_code} - {response.text}")
 
-
 def send_query(url, query):
-    # Dönüştürülmüş sorguyu belirtilen URL'ye gönderir.
     headers = {'Content-Type': 'application/json'}
-    response = requests.post(url, headers=headers, data=json.dumps(query))
+    # SQL sorgusunu JSON nesnesi içinde göndermek
+    response = requests.post(url, headers=headers, json=query)
     return response
-
 
 def check_json_labels(data):
     required_labels = {"Date", "Product Id", "InputStockCount", "OutputStockCount", "Stock"}
@@ -42,7 +50,7 @@ def check_json_labels(data):
     if "data" in data:
         for entry in data["data"]:
             if not required_labels.issubset(entry.keys()):
-                print(f"Eksik etiketler: {required_labels - entry.keys()} at entry {entry}")
+                print(f"Eksik etiketler: {required_labels - set(entry.keys())} at entry {entry}")
                 return False
         print("Tüm gerekli etiketler mevcut.")
         return True

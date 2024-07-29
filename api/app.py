@@ -3,8 +3,17 @@ from api.controllers.auth_controller import auth_bp
 from api.controllers.data_controller import data_bp
 from api.controllers.prediction_controller import prediction_bp
 from api.services.auth_service import token_required
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
+# Dosya yolu
+prediction_file_path = os.getenv('PREDICTION_FILE')
+
+# prediction.json dosyasını kontrol et ve var ise sil
+if os.path.isfile(prediction_file_path):
+    os.remove(prediction_file_path)
 
 # Blueprint'leri uygulamaya ekleyin
 app.register_blueprint(auth_bp, url_prefix='/auth')
