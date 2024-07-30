@@ -18,16 +18,12 @@ def predict_future(models, data, current_date):
         model_fit = model_info['model']
         product_data = data[data['Product Id'] == product_id]
 
-        # Prepare data for the next 3 months
         next_3_months_preds = model_fit.forecast(steps=3).tolist()
 
-        # Prepare data for the next 2 seasons
         next_2_seasons_preds = model_fit.forecast(steps=6).tolist()[3:5]
 
-        # Convert month number to name
         current_month_name = calendar.month_name[current_month]
 
-        # Determine next month and next 2 months
         if current_month == 12:
             next_month_name = calendar.month_name[1]
             next_2_months_name = calendar.month_name[2]
@@ -38,7 +34,6 @@ def predict_future(models, data, current_date):
             else:
                 next_2_months_name = calendar.month_name[current_month + 2]
 
-        # Determine next 2 seasons
         next_season = (current_season + 1 - 1) % 4 + 1
         next_2_season = (current_season + 2 - 1) % 4 + 1
 
@@ -51,10 +46,5 @@ def predict_future(models, data, current_date):
             get_season_name(next_season): round(next_2_seasons_preds[1], 2) if len(next_2_seasons_preds) > 1 else 0.0
         })
 
-    # Create a DataFrame for predictions
     predictions_df = pd.DataFrame(predictions)
-
-    # Save the DataFrame to a CSV file
-    #predictions_df.to_csv('predictions.csv', index=False)
-
     return predictions_df

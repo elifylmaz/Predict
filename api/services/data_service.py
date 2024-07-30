@@ -4,28 +4,19 @@ import os
 from dotenv import load_dotenv
 from flask import request
 
-# Load the .env file
 load_dotenv()
 
-# Retrieve the necessary values from the .env file
 gatewayUri = os.getenv('GATEWAY_URI')
 endpoint = os.getenv('ENDPOINT')
 
 def fetch_data():
-    # Ham JSON verisini al
-    raw_data = request.data.decode('utf-8')  # bytes to string
-    print("Gelen ham JSON verisi:", raw_data)
-    print("Gelen ham JSON verisinin tipi:", type(raw_data))
+    raw_data = request.data.decode('utf-8')
 
     try:
-        # JSON stringini doğrudan SQL sorgusu olarak al
         sql_query = json.loads(raw_data)
-        print("Dönüştürülmüş SQL sorgusu:", sql_query)
-        print("SQL sorgusunun tipi:", type(sql_query))
     except json.JSONDecodeError:
         raise ValueError("JSON verisi çözülürken bir hata oluştu.")
 
-    # URL ve diğer ayarları yapılandır
     url = gatewayUri + endpoint
     response = send_query(url, sql_query)
 
@@ -40,7 +31,6 @@ def fetch_data():
 
 def send_query(url, query):
     headers = {'Content-Type': 'application/json'}
-    # SQL sorgusunu JSON nesnesi içinde göndermek
     response = requests.post(url, headers=headers, json=query)
     return response
 

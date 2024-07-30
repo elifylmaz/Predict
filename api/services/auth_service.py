@@ -24,7 +24,6 @@ def get_jwt_token():
     else:
         return None
 def token_required(f):
-    #get_jwt_token()
     @wraps(f)
     def decorated_function(*args, **kwargs):
         token = request.headers.get('Authorization')

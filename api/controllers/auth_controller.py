@@ -14,5 +14,4 @@ def login():
 @auth_bp.route('/protected', methods=['GET'])
 @token_required
 def protected():
-    # Bu endpoint'e erişim token doğrulaması gerektirir
     return jsonify({'message': 'This is a protected endpoint!'})

@@ -12,30 +12,23 @@ data_bp = Blueprint('data_bp', __name__)
 @token_required
 def set_data():
     try:
-        # Verileri almak için fetch_data fonksiyonunu çağır
         data = fetch_data()
         print("Veri başarıyla alındı.")
 
-        # Verileri ön işleme tabi tut
         preprocessed_data = preprocess(data)
 
-        # Model eğitimini başlat ve sonuçları al
         print("Model eğitimi başlıyor...")
         models, avg_mse, avg_r2 = train_and_predict(preprocessed_data)
         print("Model eğitimi tamamlandı.")
 
-        # Geçerli tarihi al
         current_date = datetime.now()
 
-        # Gelecekteki tahminleri yap
         predictions_df = predict_future(models, preprocessed_data, current_date)
         print("Tahminler tamamlandı.")
 
-        # prediction_df'yi JSON formatında dosyaya yaz
         predictions_df.to_json('predictions.json', orient='records', lines=True)
         print("Tahminler kaydedildi.")
 
-        # Sonuçları JSON formatında döndür
         return jsonify({
             'avg_mse': avg_mse,
             'avg_r2': avg_r2,
@@ -43,5 +36,4 @@ def set_data():
         })
 
     except Exception as e:
-        # Hata durumunda hata mesajını JSON formatında döndür
         return jsonify({'Error': str(e)}), 500
